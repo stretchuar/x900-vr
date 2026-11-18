@@ -106,6 +106,7 @@ input[type=color]{padding:2px;width:44px;clip-path:none}
   <div class="row"><label for="sDet">Drawing detail</label><input type="checkbox" id="sDet" checked></div>
   <div class="row"><label for="sPan">Panel lines</label><input type="checkbox" id="sPan"></div>
   <div class="row"><label for="sTruss">Truss</label><input type="checkbox" id="sTruss" checked></div>
+  <div class="row"><label for="sSolid">Solid machines (walk / VR)</label><input type="checkbox" id="sSolid" checked></div>
 </div>
 
 <div class="box glass" id="box" hidden></div>
@@ -416,12 +417,35 @@ function hudText(lines){
     };
   }).catch(function(){});
 })();
+
+/* ---------- collision: floor-level parts block walking (overhangs above 1.6 m don't) ---------- */
+var SOLID=true, BODY=.3, colBoxes=[];
+(function(){var skip={lines:1,swing:1,frame:1,rail:1,cage:1};
+  DIM.machines.forEach(function(m){(m.parts||[]).forEach(function(p){var b=p.box;if(skip[p.kind]||!b||b[2]<=0||b[3]<=0)return;if(p.z0>1.6||p.z1<.15)return;
+    colBoxes.push([b[0]-OX,b[0]+b[2]-OX,-(b[1]+b[3]-OY),-(b[1]-OY)])})});})();
+function collide(pos){ // pos: {x,z}; returns correction [dx,dz]
+  if(!SOLID)return [0,0];var cx=0,cz=0;
+  for(var it=0;it<3;it++){var moved=false;
+    for(var i=0;i<colBoxes.length;i++){var b=colBoxes[i],x=pos.x+cx,z=pos.z+cz;
+      if(x<b[0]-BODY||x>b[1]+BODY||z<b[2]-BODY||z>b[3]+BODY)continue;
+      var nx=Math.max(b[0],Math.min(x,b[1])),nz=Math.max(b[2],Math.min(z,b[3])),dx=x-nx,dz=z-nz,d=Math.hypot(dx,dz);
+      if(d>=BODY)continue;
+      if(d>1e-6){cx+=dx/d*(BODY-d);cz+=dz/d*(BODY-d)}
+      else{var l=x-b[0],r=b[1]-x,t=z-b[2],bt=b[3]-z,mn=Math.min(l,r,t,bt);
+        if(mn===l)cx-=l+BODY;else if(mn===r)cx+=r+BODY;else if(mn===t)cz-=t+BODY;else cz+=bt+BODY}
+      moved=true}
+    if(!moved)break}
+  return [cx,cz];
+}
 var snapReady=true;
 function vrMove(dt){
   var s=renderer.xr.getSession();if(!s)return;var xc=renderer.xr.getCamera(camera),f=new T.Vector3();xc.getWorldDirection(f);f.y=0;f.normalize();var r=new T.Vector3(-f.z,0,f.x);
   for(var i=0;i<s.inputSources.length;i++){var src=s.inputSources[i],gp=src.gamepad;if(!gp||gp.axes.length<4)continue;var ax=gp.axes[2],ay=gp.axes[3];
     if(src.handedness==='left'){if(Math.abs(ax)>.15)rig.position.addScaledVector(r,ax*2.5*dt);if(Math.abs(ay)>.15)rig.position.addScaledVector(f,-ay*2.5*dt)}
     else{if(Math.abs(ax)>.7&&snapReady){rig.rotateY(-Math.sign(ax)*Math.PI/6);snapReady=false}if(Math.abs(ax)<.3)snapReady=true}}
+  if(SOLID){var hp=new T.Vector3();xc.getWorldPosition(hp);
+
+    var c=collide({x:hp.x,z:hp.z});rig.position.x+=c[0];rig.position.z+=c[1]}
   if(selected&&hud){var a=machines[selected].center,b=new T.Vector3();hud.getWorldPosition(b);var p=hudTrace.geometry.attributes.position;p.setXYZ(0,a.x,machines[selected].m.h,a.z);p.setXYZ(1,b.x,b.y,b.z);p.needsUpdate=true;hudTrace.visible=true}else hudTrace.visible=false;
 }
 
@@ -440,7 +464,7 @@ function vrMove(dt){
   $('glow').onchange=function(){S.glow=this.checked;applyStyle()};$('dash').onchange=function(){S.dash=this.checked;applyStyle()};$('byConf').onchange=function(){S.byConf=this.checked;applyStyle()};
   $('scan').onchange=function(){S.scan=this.checked};
   $('sPlan').onchange=function(){gPlan.visible=this.checked};$('sGrid').onchange=function(){gGrid.visible=this.checked};$('sLab').onchange=function(){gL.visible=this.checked};
-  $('sTruss').onchange=function(){gT.visible=this.checked};$('sDet').onchange=function(){S.detail=this.checked;applyStyle()};$('sPan').onchange=function(){S.panels=this.checked;buildAll()};
+  $('sTruss').onchange=function(){gT.visible=this.checked};$('sSolid').onchange=function(){SOLID=this.checked};$('sDet').onchange=function(){S.detail=this.checked;applyStyle()};$('sPan').onchange=function(){S.panels=this.checked;buildAll()};
   $('bStyle').onclick=function(){var d=$('drawer');d.hidden=!d.hidden;this.setAttribute('aria-pressed',!d.hidden)};
   $('mOrbit').onclick=function(){setMode('orbit')};$('mWalk').onclick=function(){setMode('walk')};
   $('mTop').onclick=function(){if(mode!=='orbit')setMode('orbit');orb.pol=.05;orb.az=0};
@@ -454,7 +478,7 @@ renderer.setAnimationLoop(function(now){
   else{
     if(fly){var k=Math.min(1,(now-fly.t0)/650),e=k*k*(3-2*k);orb.t.lerpVectors(fly.a,fly.b,e);orb.d=fly.d0+(fly.d1-fly.d0)*e;if(k>=1)fly=null}
     if(mode==='walk'){var sp=(keys.shift?7:3)*dt,fx=-Math.sin(walk.yaw),fz=-Math.cos(walk.yaw),mf=(keys.w||keys.arrowup?1:0)-(keys.s||keys.arrowdown?1:0)-joy.y,ms=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0)+joy.x;
-      camera.position.x+=(fx*mf-fz*ms)*sp;camera.position.z+=(fz*mf+fx*ms)*sp;camera.position.y=1.7}
+      camera.position.x+=(fx*mf-fz*ms)*sp;camera.position.z+=(fz*mf+fx*ms)*sp;camera.position.y=1.7;var cc=collide(camera.position);camera.position.x+=cc[0];camera.position.z+=cc[1]}
     setCam();
   }
   (renderer.xr.isPresenting?renderer.xr.getCamera(camera):camera).getWorldPosition(cp);
@@ -468,7 +492,7 @@ renderer.setAnimationLoop(function(now){
 });
 buildAll();hint();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){buildAll()});
-window.__viewer={select:select,setMode:setMode,orb:orb,machines:machines,fat:FAT};
+window.__viewer={select:select,setMode:setMode,orb:orb,machines:machines,fat:FAT,camera:camera,walk:walk,keys:keys,colBoxes:colBoxes,DIM:DIM,OX:OX,OY:OY};
 })();
 </script>
 </body>
