@@ -102,7 +102,7 @@ input[type=color]{padding:2px;width:44px;clip-path:none}
   <h2 style="margin-top:10px">Show</h2>
   <div class="row"><label for="sPlan">Floor plan linework</label><input type="checkbox" id="sPlan" checked></div>
   <div class="row"><label for="sGrid">1 m / 5 m grid</label><input type="checkbox" id="sGrid"></div>
-  <div class="row"><label for="sLab">Labels and traces</label><input type="checkbox" id="sLab" checked></div>
+  <div class="row"><label for="sLab">Status boards</label><input type="checkbox" id="sLab" checked></div>
   <div class="row"><label for="sDet">Drawing detail</label><input type="checkbox" id="sDet" checked></div>
   <div class="row"><label for="sPan">Panel lines</label><input type="checkbox" id="sPan"></div>
   <div class="row"><label for="sTruss">Truss</label><input type="checkbox" id="sTruss" checked></div>
@@ -122,7 +122,7 @@ input[type=color]{padding:2px;width:44px;clip-path:none}
 'use strict';
 var $=function(id){return document.getElementById(id)};
 if(!window.THREE){var e=document.createElement('div');e.id='err';e.textContent='The 3D library did not load, so the model cannot be drawn. Check the connection and reload.';document.body.appendChild(e);return}
-var T=THREE, DIM=JSON.parse($('dim').textContent);
+var T=THREE, DIM=JSON.parse($('dim').textContent), BD={"modula":{"state":"RUN","note":null,"tools":0,"tool":"Tray call","part":"Retrieve / store","tct":null},"caron":{"state":"RUN","note":null,"tools":0,"tool":"Roll loaded","part":"LT roll · BICO","tct":null},"table":{"state":"RUN","note":null,"tools":0,"tool":"Spread","part":"Conveyor table","tct":null},"vector":{"state":"RUN","note":null,"tools":1,"tool":"Cutting programmes (no physical tools)","part":"DP, LT, UT","tct":null,"mct":null},"p100":{"state":"RUN","note":null,"tools":8,"tool":"A Pillar LH forming tool","part":"LT · D.01","tct":85.0,"mct":103,"plan":270,"done":59,"scrap":0},"booth":{"state":"RUN","note":null,"tools":6,"tool":"FRT outer lid gluing (fixture)","part":"DP · E.01","tct":100.0,"mct":65,"plan":229,"done":59,"scrap":0},"oven":{"state":"RUN","note":null,"tools":0,"tool":"Oven profile","part":"Dryer zone 1-2 · 65 °C","tct":null},"meler":{"state":"IDLE","note":"Armrests only · runs Tue/Wed","tools":1,"tool":"FRT / RR armrest pattern hotmelt","part":"DP · E.07","tct":46.0,"mct":39,"plan":498,"done":0,"scrap":0},"prepA":{"state":"RUN","note":null,"tools":25,"tool":"A pillar upper PU LH (nest)","part":"UT · F.01","tct":293.0,"mct":206,"plan":78,"done":17,"scrap":0},"prepB":{"state":"RUN","note":null,"tools":25,"tool":"A pillar upper PU RH (nest)","part":"UT · F.02","tct":293.0,"mct":217,"plan":78,"done":18,"scrap":0},"keber":{"state":"RUN","note":null,"tools":11,"tool":"A pillar upper PU (PU variant) membrane tool","part":"UT · G.01","tct":200.0,"mct":244,"plan":114,"done":26,"scrap":0},"p10A":{"state":"RUN","note":null,"tools":3,"tool":"Map pocket FRT & RR LH + RH","part":"DP · H.03","tct":115.0,"mct":131,"plan":199,"done":37,"scrap":1},"p10B":{"state":"CHG","note":"Changeover to edge fold · 12 min in","tools":4,"tool":"G. EF A + B pillar upper (A pillar side)","part":"UT · J.01","tct":70.0,"mct":73,"plan":327,"done":91,"scrap":1},"punch1":{"state":"RUN","note":null,"tools":7,"tool":"A pillar upper LH + RH (punch tool)","part":"UT · I.01","tct":38.0,"mct":32,"plan":603,"done":124,"scrap":3},"punch2":{"state":"DOWN","note":"Punch tool fault · maintenance called","tools":7,"tool":"B pillar upper LH + RH (punch tool)","part":"UT · I.02","tct":38.0,"mct":35,"plan":603,"done":177,"scrap":3},"wj":{"state":"RUN","note":null,"tools":6,"tool":"Treadplate LH + RH (fixture)","part":"LT · K.01","tct":120.0,"mct":143,"plan":191,"done":43,"scrap":1},"kmt1":{"state":"RUN","note":null,"tools":0,"tool":"Intensifier","part":"3,800 bar","tct":null},"kmt2":{"state":"IDLE","note":null,"tools":0,"tool":"Intensifier","part":"Standby pump","tct":null},"usw":{"state":"RUN","note":null,"tools":2,"tool":"B pillar (X900) weld nest","part":"UT · JEA","tct":70.0,"mct":null,"plan":327,"done":60,"scrap":2},"alma":{"state":"RUN","note":null,"tools":0,"tool":"Alma Flex","part":"Finishing structure","tct":null},"harx":{"state":"RUN","note":null,"tools":21,"tool":"A pillar lower LH (nest)","part":"LT · N.01","tct":125.0,"mct":null,"plan":183,"done":39,"scrap":0},"dpU":{"state":"RUN","note":null,"tools":1,"tool":"FRT & RR, LH & RH dedicated nests","part":"DP · P.02","tct":150.0,"mct":150,"plan":153,"done":29,"scrap":0},"dpL":{"state":"RUN","note":null,"tools":1,"tool":"FRT & RR, LH & RH dedicated nests","part":"DP · P.01","tct":150.0,"mct":150,"plan":153,"done":42,"scrap":0},"skU":{"state":"RUN","note":null,"tools":1,"tool":"EOL camera check, DP upper","part":"DP","tct":null,"mct":null},"skL":{"state":"RUN","note":null,"tools":1,"tool":"EOL camera check, DP lower","part":"DP","tct":null,"mct":null},"cvUW":{"state":"RUN","note":null,"tools":0,"tool":"Slat conveyor","part":"DP upper · to EOL","tct":null},"cvUE":{"state":"RUN","note":null,"tools":0,"tool":"Slat conveyor","part":"DP upper · to EOL","tct":null},"cvLW":{"state":"RUN","note":null,"tools":0,"tool":"Slat conveyor","part":"DP lower · to EOL","tct":null},"cvLE":{"state":"RUN","note":null,"tools":0,"tool":"Slat conveyor","part":"DP lower · to EOL","tct":null}};
 var OX=1026.5, OY=689;                             // world origin in layout metres
 function W(x,y,z){return [x-OX, z||0, -(y-OY)]}   // layout (x east, y north, height) -> three (X, Y up, Z south)
 var FAT=!!(T.LineSegments2&&T.LineMaterial&&T.LineSegmentsGeometry);
@@ -283,15 +283,11 @@ function buildAll(){
     var shell=new T.Mesh(xg,xm);shell.renderOrder=0;gM.add(shell);
     var b=m.box,top=m.h,c=W(b[0]+b[2]/2,b[1]+b[3]/2,top/2);
     var pick=new T.Mesh(new T.BoxGeometry(b[2],top,b[3]),new T.MeshBasicMaterial({visible:false}));pick.position.set(c[0],c[1],c[2]);pick.userData.id=m.id;gM.add(pick);pickList.push(pick);
-    var lab=labelSprite(SHORT[m.id]||m.short||m.id,b[2].toFixed(1)+' × '+b[3].toFixed(1)+' × '+(+m.h).toFixed(1)+' m'),ly=top+1.2;lab.position.set(c[0]+.9,ly,c[2]);lab.userData.id=m.id;gL.add(lab);
-    tr.push(c[0],top,c[2],c[0],ly-.3,c[2], c[0],ly-.3,c[2],c[0]+.9,ly,c[2]);
     machines[m.id]={m:m,line:o,mat:mat,glow:glow,det:det,xm:xm,center:new T.Vector3(c[0],top/2,c[2]),size:Math.max(b[2],b[3],top)};
   });
-  var tg=new T.BufferGeometry();tg.setAttribute('position',new T.Float32BufferAttribute(tr,3));
-  var tl=new T.LineSegments(tg,new T.LineBasicMaterial({color:S.acc,transparent:true,opacity:.8}));tl.userData.trace=1;gL.add(tl);
   var ta=[],t=DIM.truss;t.runs.forEach(function(r){truss(ta,r.a,r.b,t.underside,t.section)});
   gT.add(lineObj(ta,lineMat(S.line,Math.max(.5,S.w*.6),S.o*.55)));
-  applyStyle();resize();
+  buildBoards();applyStyle();resize();
 }
 function decodePlan(id,x0,y0){
   var s=atob($(id).textContent.trim()),n=s.length>>1,v=new Int16Array(n),i;for(i=0;i<n;i++){var u=s.charCodeAt(2*i)|(s.charCodeAt(2*i+1)<<8);v[i]=u>32767?u-65536:u}
@@ -377,18 +373,79 @@ var ray=new T.Raycaster();
 function pickAt(x,y){var r=cv.getBoundingClientRect();ray.setFromCamera(new T.Vector2((x-r.left)/r.width*2-1,-(y-r.top)/r.height*2+1),camera);var h=ray.intersectObjects(pickList);select(h.length?h[0].object.userData.id:null)}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function select(id){
-  selected=id;applyStyle();var b=$('box');$('hint').hidden=!!id&&NARROW();gSel.visible=!!id;
-  if(!id){b.hidden=true;hudText(null);return}
-  var k=machines[id],m=k.m;gSel.position.set(k.center.x,.03,k.center.z);gSel.userData.r=Math.hypot(m.box[2],m.box[3])/2+.4;
-  var h='<button class="x" id="bx" aria-label="Close">×</button><h2>Machine data</h2><h3>'+esc(m.name)+'</h3><dl>'+
-    '<dt>Footprint</dt><dd>'+m.box[2].toFixed(2)+' × '+m.box[3].toFixed(2)+' m</dd><dt>Height</dt><dd>'+m.h+' m</dd>'+
-    '<dt>Plan x, y</dt><dd>'+m.box[0].toFixed(2)+', '+m.box[1].toFixed(2)+'</dd><dt>Confidence</dt><dd><span class="chip '+m.confidence+'">'+m.confidence+'</span></dd>'+
-    '<dt>Source</dt><dd>'+esc(m.source)+'</dd></dl>'+(m.note?'<p style="margin:0 0 8px;color:var(--dim)">'+esc(m.note)+'</p>':'');
-  var rows=m.blocks||m.parts.filter(function(p){return p.kind!=='lines'}).map(function(p){return {name:p.name,size:p.box[2].toFixed(2)+' × '+p.box[3].toFixed(2),z:p.z0+' to '+p.z1}});
-  if(rows.length>1){h+='<div class="tw"><table><tr><th>Block</th><th>Size (m)</th><th>Height (m)</th></tr>';
-    rows.forEach(function(p){h+='<tr><td>'+esc(p.name)+'</td><td>'+esc(p.size)+'</td><td>'+esc(p.z)+'</td></tr>'});h+='</table></div>'}
-  b.innerHTML=h;b.hidden=false;$('bx').onclick=function(){select(null)};
-  hudText([SHORT[id]||m.short||id,m.box[2].toFixed(2)+' x '+m.box[3].toFixed(2)+' x '+m.h+' m','confidence: '+m.confidence]);
+  selected=id;applyStyle();$('box').hidden=true;$('hint').hidden=!!id&&NARROW();gSel.visible=!!id;
+  if(!id)return;var k=machines[id],m=k.m;gSel.position.set(k.center.x,.03,k.center.z);gSel.userData.r=Math.hypot(m.box[2],m.box[3])/2+.4;
+}
+
+/* ---------- machine status boards (example data) ---------- */
+var boards={}, BW=1.6, BH=1.0, CW=1024, CH=640, ST={RUN:['RUNNING','#2fd17a'],CHG:['CHANGEOVER','#ffb43a'],DOWN:['DOWN','#ff4d5e'],IDLE:['NOT SCHEDULED','#8a9bb0']};
+var SHIFT0=Date.now();
+function fmtT(s){s=Math.max(0,Math.round(s));return Math.floor(s/60)+':'+('0'+s%60).slice(-2)}
+function drawBoard(id){
+  var B=boards[id],d=BD[id]||{state:'IDLE'},x=B.ctx,st=ST[d.state]||ST.IDLE,sel=selected===id,now=Date.now();
+  x.clearRect(0,0,CW,CH);
+  x.fillStyle='rgba(3,12,24,.9)';x.fillRect(0,0,CW,CH);
+  x.lineWidth=sel?10:5;x.strokeStyle=sel?S.acc:st[1];x.strokeRect(5,5,CW-10,CH-10);
+  x.fillStyle=st[1];x.fillRect(5,5,CW-10,14);
+  // header
+  x.fillStyle='#fff';x.font='600 64px "Barlow Condensed","Arial Narrow",Arial,sans-serif';x.textBaseline='alphabetic';
+  x.fillText(SHORT[id]||(B.m.short||id).toUpperCase(),36,96);
+  x.font='600 34px "Barlow Condensed","Arial Narrow",Arial,sans-serif';var pw=x.measureText(st[0]).width+44;
+  var blink=d.state==='DOWN'&&Math.floor(now/600)%2;x.fillStyle=blink?'rgba(255,77,94,.25)':st[1];x.fillRect(CW-36-pw,52,pw,54);
+  x.fillStyle=blink?st[1]:'#031018';x.fillText(st[0],CW-36-pw+22,92);
+  function row(lbl,val,y,col){x.font='26px "IBM Plex Mono",monospace';x.fillStyle='#7fa6c4';x.fillText(lbl,36,y);
+    x.font='500 38px "Barlow Condensed","Arial Narrow",Arial,sans-serif';x.fillStyle=col||'#e8f6ff';var v=String(val||'—');
+    while(x.measureText(v).width>CW-260&&v.length>4)v=v.slice(0,-2);if(v!==String(val||'—'))v=v.slice(0,-1)+'…';x.fillText(v,210,y)}
+  row('TOOL',d.tool,160);row('PART',d.part,212);
+  x.strokeStyle='rgba(143,227,255,.25)';x.lineWidth=2;x.beginPath();x.moveTo(36,240);x.lineTo(CW-36,240);x.stroke();
+  if(d.tct){
+    var run=d.state==='RUN',el=(now-SHIFT0)/1000,ct=d.tct*(1+.06*Math.sin(id.length+el/40)),
+        cyc=run?Math.floor(el/ct):0,done=d.done+cyc,scr=d.scrap+Math.floor(cyc/37),ph=run?(el%ct)/ct:0,
+        dev=(ct-d.tct)/d.tct, ctCol=dev>.05?'#ff4d5e':dev>0?'#ffb43a':'#2fd17a';
+    // cycle time
+    x.font='26px "IBM Plex Mono",monospace';x.fillStyle='#7fa6c4';x.fillText('CYCLE TIME',36,290);
+    x.font='600 92px "Barlow Condensed","Arial Narrow",Arial,sans-serif';x.fillStyle=run?ctCol:'#8a9bb0';x.fillText(run?ct.toFixed(0)+' s':'— s',36,380);
+    x.font='28px "IBM Plex Mono",monospace';x.fillStyle='#cfefff';x.fillText('target '+d.tct.toFixed(0)+' s',36,422);
+    x.fillStyle='rgba(143,227,255,.15)';x.fillRect(36,442,400,18);x.fillStyle=run?S.acc:'#445';x.fillRect(36,442,400*ph,18);
+    x.font='24px "IBM Plex Mono",monospace';x.fillStyle='#7fa6c4';x.fillText(run?'this cycle '+fmtT(ph*ct):(d.state==='CHG'?'changeover in progress':d.state==='DOWN'?'stopped':'no production today'),36,492);
+    // output and scrap
+    var gx=520;x.font='26px "IBM Plex Mono",monospace';x.fillStyle='#7fa6c4';x.fillText('GOOD / PLAN (SHIFT)',gx,290);
+    x.font='600 70px "Barlow Condensed","Arial Narrow",Arial,sans-serif';x.fillStyle='#e8f6ff';x.fillText(done+' / '+d.plan,gx,362);
+    x.fillStyle='rgba(143,227,255,.15)';x.fillRect(gx,378,468,16);x.fillStyle='#2fd17a';x.fillRect(gx,378,468*Math.min(1,done/d.plan),16);
+    var sp=done?scr/(done+scr)*100:0,oee=run?Math.max(55,Math.min(92,85-dev*120-sp*2)):d.state==='IDLE'?0:38;
+    x.font='26px "IBM Plex Mono",monospace';x.fillStyle='#7fa6c4';x.fillText('SCRAP',gx,440);x.fillText('OEE',gx+300,440);
+    x.font='600 54px "Barlow Condensed","Arial Narrow",Arial,sans-serif';x.fillStyle=sp>2?'#ff4d5e':sp>1?'#ffb43a':'#e8f6ff';x.fillText(String(scr),gx,494);var sw=x.measureText(String(scr)).width;x.font='500 34px "Barlow Condensed","Arial Narrow",Arial,sans-serif';x.fillText(sp.toFixed(1)+'%',gx+sw+14,494);x.font='600 54px "Barlow Condensed","Arial Narrow",Arial,sans-serif';
+    x.fillStyle=oee>=80?'#2fd17a':oee>=65?'#ffb43a':'#ff4d5e';x.fillText(d.state==='IDLE'?'—':oee.toFixed(0)+'%',gx+300,494);
+  }else{
+    x.font='26px "IBM Plex Mono",monospace';x.fillStyle='#7fa6c4';x.fillText('STATUS',36,290);
+    x.font='600 70px "Barlow Condensed","Arial Narrow",Arial,sans-serif';x.fillStyle=st[1];x.fillText(d.state==='RUN'?'In service':d.state==='IDLE'?'Standby':st[0],36,370);
+    x.font='28px "IBM Plex Mono",monospace';x.fillStyle='#cfefff';x.fillText('no cycle time on this asset',36,420);
+  }
+  // footer
+  x.strokeStyle='rgba(143,227,255,.25)';x.beginPath();x.moveTo(36,530);x.lineTo(CW-36,530);x.stroke();
+  x.font='26px "IBM Plex Mono",monospace';x.fillStyle=d.note?(d.state==='DOWN'?'#ff8a95':d.state==='CHG'?'#ffcf7a':'#cfefff'):'#7fa6c4';
+  x.fillText(d.note||(d.tools?d.tools+' X900 tools / nests on this machine':'X900 line asset'),36,574);
+  var t=new Date();x.fillStyle='#5f7f99';x.font='22px "IBM Plex Mono",monospace';
+  x.fillText('EXAMPLE DATA · shift A · '+('0'+t.getHours()).slice(-2)+':'+('0'+t.getMinutes()).slice(-2)+':'+('0'+t.getSeconds()).slice(-2),36,614);
+  B.tex.needsUpdate=true;
+}
+function buildBoards(){
+  Object.keys(boards).forEach(function(id){var B=boards[id];scene.remove(B.g);B.tex.dispose()});boards={};
+  DIM.machines.forEach(function(m){
+    var c=document.createElement('canvas');c.width=CW;c.height=CH;var tex=new T.CanvasTexture(c);tex.anisotropy=4;
+    var b=m.box,top=+m.h,cx=b[0]+b[2]/2,cy=b[1]+b[3]/2,small=Math.max(b[2],b[3])<2.2,sc=small?.8:1;
+    // low machines: board hangs above. Tall machines (over 3.2 m): board on a post at the south face, at 2.4 m.
+    var tall=top>3.2,yc=tall?2.4+BH*sc/2:top+.35+BH*sc/2,p=tall?W(cx,b[1]-.35,yc):W(cx,cy,yc);
+    var g=new T.Group();g.position.set(p[0],p[1],p[2]);
+    var mesh=new T.Mesh(new T.PlaneGeometry(BW,BH),new T.MeshBasicMaterial({map:tex,transparent:true,side:T.DoubleSide,depthWrite:false}));mesh.renderOrder=6;mesh.userData.id=m.id;g.add(mesh);pickList.push(mesh);
+    var L=[],hw=BW/2,hh=BH/2;
+    if(tall){L.push(0,-hh,0, 0,-yc,0)} // post to floor
+    else{L.push(-hw*.8,-hh,0,-hw*.8,-(yc-top),0, hw*.8,-hh,0,hw*.8,-(yc-top),0)} // two hangers down to the machine
+    var lg=new T.BufferGeometry();lg.setAttribute('position',new T.Float32BufferAttribute(L,3));g.add(new T.LineSegments(lg,new T.LineBasicMaterial({color:S.line,transparent:true,opacity:.6})));
+    g.scale.setScalar(sc);g.userData={sc:sc,yc:yc};
+    scene.add(g);g.visible=gL.visible;
+    boards[m.id]={g:g,ctx:c.getContext('2d'),tex:tex,m:m,mesh:mesh};drawBoard(m.id);
+  });
 }
 
 /* ---------- VR: head-locked data card + trace, thumbstick walk, trigger select ---------- */
@@ -446,7 +503,7 @@ function vrMove(dt){
   if(SOLID){var hp=new T.Vector3();xc.getWorldPosition(hp);
 
     var c=collide({x:hp.x,z:hp.z});rig.position.x+=c[0];rig.position.z+=c[1]}
-  if(selected&&hud){var a=machines[selected].center,b=new T.Vector3();hud.getWorldPosition(b);var p=hudTrace.geometry.attributes.position;p.setXYZ(0,a.x,machines[selected].m.h,a.z);p.setXYZ(1,b.x,b.y,b.z);p.needsUpdate=true;hudTrace.visible=true}else hudTrace.visible=false;
+  if(false&&selected&&hud){var a=machines[selected].center,b=new T.Vector3();hud.getWorldPosition(b);var p=hudTrace.geometry.attributes.position;p.setXYZ(0,a.x,machines[selected].m.h,a.z);p.setXYZ(1,b.x,b.y,b.z);p.needsUpdate=true;hudTrace.visible=true}else hudTrace.visible=false;
 }
 
 /* ---------- UI wiring ---------- */
@@ -484,8 +541,11 @@ renderer.setAnimationLoop(function(now){
   (renderer.xr.isPresenting?renderer.xr.getCamera(camera):camera).getWorldPosition(cp);
   var sc=(S.scan&&!CALM)?((now/1000)%8)/8*7.5-.5:-9;
   Object.keys(machines).forEach(function(id){machines[id].xm.uniforms.uScan.value=sc});
-  if(gL.visible)gL.children.forEach(function(o){if(o.isSprite){var d=o.position.distanceTo(cp),k=Math.min(2.2,Math.max(.34,d*.034)),far=NARROW()?55:75;
-    o.visible=o.userData.id===selected||d<far;o.material.opacity=o.userData.id===selected?1:Math.min(1,Math.max(.25,(far-d)/25));o.scale.set(o.userData.ar*k,k,1)}});
+  var bi=0;Object.keys(boards).forEach(function(id){var B=boards[id],g=B.g;g.visible=gL.visible;if(!g.visible)return;
+    g.rotation.y=Math.atan2(cp.x-g.position.x,cp.z-g.position.z);
+    var d=g.position.distanceTo(cp),s1=B.g.userData.sc*(selected===id?1.35:1)*(d>30?Math.min(2.2,d/30):1);g.scale.setScalar(s1);
+    B.mesh.material.opacity=selected===id?1:Math.min(1,Math.max(.35,(90-d)/40));
+    if((tick+(bi++))%30===0||(selected===id&&tick%6===0))drawBoard(id)});
   if(gSel.visible){var R=gSel.userData.r||2,ph=CALM?0:(now/1600)%1;rings.forEach(function(r,i){var q=(ph+i/3)%1,s=R*(1+q*.6);r.scale.set(s,1,s);r.material.opacity=CALM?.6:.9*(1-q)})}
   if(tick%10===0){var hd=mode==='orbit'?orb.az:walk.yaw;$('pos').textContent='X '+(cp.x+OX).toFixed(1)+'  Y '+(-cp.z+OY).toFixed(1)+'  Z '+cp.y.toFixed(1)+' m  ·  HDG '+(((-hd*57.2958)%360+360)%360).toFixed(0)+'°'}
   renderer.render(scene,camera);
