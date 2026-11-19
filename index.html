@@ -463,7 +463,7 @@ function hudText(lines){
   navigator.xr.isSessionSupported('immersive-vr').then(function(ok){
     if(!ok)return;renderer.xr.enabled=true;var b=$('mVR');b.hidden=false;
     [0,1].forEach(function(i){var c=renderer.xr.getController(i);var lg=new T.BufferGeometry();lg.setAttribute('position',new T.Float32BufferAttribute([0,0,0,0,0,-6],3));var ln=new T.Line(lg,new T.LineBasicMaterial({color:0xffffff}));c.add(ln);rig.add(c);c.addEventListener('connected',function(ev){var d=ev.data;ln.material.color.set(d&&d.hand&&d.handedness==='left'?S.acc:0xffffff);ln.scale.z=d&&d.hand?.5:1});
-      c.addEventListener('selectstart',function(ev){if(ev.data&&ev.data.hand&&ev.data.handedness==='left')return;var m=new T.Matrix4().extractRotation(c.matrixWorld);ray.ray.origin.setFromMatrixPosition(c.matrixWorld);ray.ray.direction.set(0,0,-1).applyMatrix4(m);var h=ray.intersectObjects(pickList);select(h.length?h[0].object.userData.id:null)})});
+      c.addEventListener('selectstart',function(ev){if(ev.data&&ev.data.hand)return;var m=new T.Matrix4().extractRotation(c.matrixWorld);ray.ray.origin.setFromMatrixPosition(c.matrixWorld);ray.ray.direction.set(0,0,-1).applyMatrix4(m);var h=ray.intersectObjects(pickList);select(h.length?h[0].object.userData.id:null)})});
     b.onclick=function(){
       if(renderer.xr.isPresenting){renderer.xr.getSession().end();return}
       navigator.xr.requestSession('immersive-vr',{optionalFeatures:['local-floor','hand-tracking']}).then(function(s){
@@ -496,7 +496,11 @@ function collide(pos){ // pos: {x,z}; returns correction [dx,dz]
 }
 /* ---------- hand tracking (Quest): left pinch-and-hold walks where the left hand points; right pinch selects ---------- */
 var JN=['wrist','thumb-metacarpal','thumb-phalanx-proximal','thumb-phalanx-distal','thumb-tip','index-finger-metacarpal','index-finger-phalanx-proximal','index-finger-phalanx-intermediate','index-finger-phalanx-distal','index-finger-tip','middle-finger-metacarpal','middle-finger-phalanx-proximal','middle-finger-phalanx-intermediate','middle-finger-phalanx-distal','middle-finger-tip','ring-finger-metacarpal','ring-finger-phalanx-proximal','ring-finger-phalanx-intermediate','ring-finger-phalanx-distal','ring-finger-tip','pinky-finger-metacarpal','pinky-finger-phalanx-proximal','pinky-finger-phalanx-intermediate','pinky-finger-phalanx-distal','pinky-finger-tip'];
-var handDots=null,pinch={left:false,right:false},HQ=new T.Quaternion(),HV=new T.Vector3();
+function turnHead(a){ // snap-turn about the head, not the rig origin
+  var h=new T.Vector3();renderer.xr.getCamera(camera).getWorldPosition(h);
+  var o=new T.Vector3().subVectors(h,rig.position),o2=o.clone().applyAxisAngle(new T.Vector3(0,1,0),a);
+  rig.rotateY(a);rig.position.add(o.sub(o2));rig.position.y=0}
+var rDrag=null,handDots=null,pinch={left:false,right:false},HQ=new T.Quaternion(),HV=new T.Vector3();
 function handsMove(dt,frame){
   var s=renderer.xr.getSession(),ref=renderer.xr.getReferenceSpace();if(!s||!frame||!ref||!frame.getJointPose)return;
   if(!handDots){var g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(new Float32Array(150),3));g.setAttribute('color',new T.Float32BufferAttribute(new Float32Array(150),3));
@@ -508,6 +512,14 @@ function handsMove(dt,frame){
       if(n<50){pos.setXYZ(n,p.transform.position.x,p.transform.position.y,p.transform.position.z);var c=pinch[hand]?acc:wht;col.setXYZ(n,c.r,c.g,c.b);n++}}
     var a=jp['thumb-tip'],b=jp['index-finger-tip'];
     if(a&&b){var d=Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z);pinch[hand]=pinch[hand]?d<.04:d<.022}else pinch[hand]=false;
+    if(hand==='right'){var tip=jp['index-finger-tip'];
+      if(pinch.right&&tip){var w=rig.localToWorld(new T.Vector3(tip.x,tip.y,tip.z)),xc=renderer.xr.getCamera(camera),f=new T.Vector3();xc.getWorldDirection(f);f.y=0;f.normalize();var rt=new T.Vector3(-f.z,0,f.x);
+        if(!rDrag)rDrag={a:w,moved:false};else{var lat=new T.Vector3().subVectors(w,rDrag.a).dot(rt);
+          if(Math.abs(lat)>.11){turnHead(-Math.sign(lat)*Math.PI/6);rDrag.moved=true;rig.updateMatrixWorld(true);rDrag.a=rig.localToWorld(new T.Vector3(tip.x,tip.y,tip.z))}}}
+      else if(rDrag){if(!rDrag.moved){var rp2=frame.getPose(src.targetRaySpace,ref);if(rp2){var t=rp2.transform;
+          ray.ray.origin.copy(rig.localToWorld(new T.Vector3(t.position.x,t.position.y,t.position.z)));HQ.set(t.orientation.x,t.orientation.y,t.orientation.z,t.orientation.w);
+          ray.ray.direction.set(0,0,-1).applyQuaternion(HQ).applyQuaternion(rig.quaternion);var hh=ray.intersectObjects(pickList);select(hh.length?hh[0].object.userData.id:null)}}
+        rDrag=null}}
     if(hand==='left'&&pinch.left){var rp=frame.getPose(src.targetRaySpace,ref);if(rp){var o=rp.transform.orientation;HQ.set(o.x,o.y,o.z,o.w);
       HV.set(0,0,-1).applyQuaternion(HQ).applyQuaternion(rig.quaternion);HV.y=0;if(HV.lengthSq()>1e-4){HV.normalize();rig.position.addScaledVector(HV,1.6*dt)}}}
   }
@@ -519,7 +531,7 @@ function vrMove(dt){
   var s=renderer.xr.getSession();if(!s)return;var xc=renderer.xr.getCamera(camera),f=new T.Vector3();xc.getWorldDirection(f);f.y=0;f.normalize();var r=new T.Vector3(-f.z,0,f.x);
   for(var i=0;i<s.inputSources.length;i++){var src=s.inputSources[i],gp=src.gamepad;if(!gp||gp.axes.length<4)continue;var ax=gp.axes[2],ay=gp.axes[3];
     if(src.handedness==='left'){if(Math.abs(ax)>.15)rig.position.addScaledVector(r,ax*2.5*dt);if(Math.abs(ay)>.15)rig.position.addScaledVector(f,-ay*2.5*dt)}
-    else{if(Math.abs(ax)>.7&&snapReady){rig.rotateY(-Math.sign(ax)*Math.PI/6);snapReady=false}if(Math.abs(ax)<.3)snapReady=true}}
+    else{if(Math.abs(ax)>.7&&snapReady){turnHead(-Math.sign(ax)*Math.PI/6);snapReady=false}if(Math.abs(ax)<.3)snapReady=true}}
   if(SOLID){var hp=new T.Vector3();xc.getWorldPosition(hp);
 
     var c=collide({x:hp.x,z:hp.z});rig.position.x+=c[0];rig.position.z+=c[1]}
