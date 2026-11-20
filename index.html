@@ -56,7 +56,7 @@ input[type=color]{padding:2px;width:44px;clip-path:none}
 #joy{position:fixed;left:max(18px,env(safe-area-inset-left,0px));bottom:calc(54px + env(safe-area-inset-bottom,0px));width:120px;height:120px;border-radius:50%;border:1px solid var(--edge);background:rgba(3,14,26,.45);touch-action:none}
 #joy i{position:absolute;left:50%;top:50%;width:44px;height:44px;margin:-22px;border-radius:50%;background:var(--ink);opacity:.8}
 #err{position:fixed;inset:auto 12px 60px 12px;background:#5a0f14;border:1px solid var(--low);padding:10px}
-#lxPanel{left:auto;right:max(12px,env(safe-area-inset-right,0px));width:min(400px,calc(100vw - 24px));max-height:calc(100dvh - 110px);top:calc(86px + env(safe-area-inset-top,0px))}
+#lxPanel{top:var(--lxTop,calc(86px + env(safe-area-inset-top,0px)))!important;max-height:calc(100dvh - var(--lxTop,86px) - 12px)!important;left:auto;right:max(12px,env(safe-area-inset-right,0px));width:min(400px,calc(100vw - 24px));max-height:calc(100dvh - 110px);top:calc(86px + env(safe-area-inset-top,0px))}
 #lxPanel h2{margin-bottom:6px}#lxPanel .row select{max-width:190px}
 .ctl{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.ctl button{flex:1 1 auto}
 #lxScrub{width:100%;accent-color:var(--accent)}
@@ -128,7 +128,7 @@ a{color:var(--accent)}
 
 <div class="box glass" id="box" hidden></div>
 <div class="drawer glass" id="lxPanel" hidden>
-  <h2>Production launcher</h2>
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h2 style="margin:0">Production launcher</h2><button id="lxClose" aria-label="Close the launcher" style="min-height:36px;padding:0 12px">Close ✕</button></div>
   <div class="row"><label for="lxDay">Day</label><select id="lxDay"><option>Mon</option><option>Tue</option><option>Wed</option><option selected>Thu</option><option>Fri</option></select></div>
   <div class="row"><label for="lxShift">Shift</label><select id="lxShift"><option selected>S1</option><option>S2</option><option>S3</option></select></div>
   <div class="row"><label for="lxLab">Labour</label><select id="lxLab"><option value="roster">As rostered</option><option value="u25">25% unskilled temps</option><option value="u50">50% unskilled temps</option><option value="new">New team, 1 trainer per crew</option></select></div>
@@ -995,7 +995,11 @@ function lxLoadXlsx(file){
   if(window.XLSX)go();else{var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=go;s.onerror=function(){$('lxSrc').textContent='The spreadsheet reader did not load. Check the connection.'};document.head.appendChild(s)}
 }
 (function(){
-  $('bLaunch').onclick=function(){var p=$('lxPanel');p.hidden=!p.hidden;this.setAttribute('aria-pressed',!p.hidden);if(!p.hidden&&!LX.run)lxLaunch()};
+  function lxTop(){var bar=$('bLaunch').getBoundingClientRect();document.documentElement.style.setProperty('--lxTop',Math.round(bar.bottom+8)+'px')}
+  function lxShow(on){var p=$('lxPanel');p.hidden=!on;$('bLaunch').setAttribute('aria-pressed',on);if(on){lxTop();if(!LX.run)lxLaunch()}}
+  $('bLaunch').onclick=function(){lxShow($('lxPanel').hidden)};
+  $('lxClose').onclick=function(){lxShow(false)};
+  window.addEventListener('resize',lxTop);
   $('lxGo').onclick=function(){LX.day=$('lxDay').value;LX.shift=$('lxShift').value;LX.labour=$('lxLab').value;lxLaunch();LX.play=true};
   $('lxPlay').onclick=function(){lxAct('play')};
   $('lxSpeed').onchange=function(){LX.speed=+this.value};
